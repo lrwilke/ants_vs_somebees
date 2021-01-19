@@ -65,14 +65,14 @@ class Place:
     def __str__(self):
         return self.name
 
-
 class Insect:
     """An Insect, the base class of Ant and Bee, has armor and a Place."""
 
-    def __init__(self, armor, place=None):
+    def __init__(self, armor, place=None, watersafe=False):
         """Create an Insect with an armor amount and a starting Place."""
         self.armor = armor
         self.place = place  # set by Place.add_insect and Place.remove_insect
+        self.watersafe = watersafe
 
 
     def reduce_armor(self, amount):
@@ -106,6 +106,9 @@ class Insect:
 
 class Bee(Insect):
     """A Bee moves from place to place, following exits and stinging ants."""
+    def __init__(self, armor, place=None):
+        self.watersafe=True
+        super().__init__(armor, place=place, watersafe=self.watersafe)
 
     name = 'Bee'
 
@@ -448,7 +451,9 @@ class Water(Place):
     def add_insect(self, insect):
         """Add insect if it is watersafe, otherwise reduce its armor to 0."""
         print('added', insect, insect.watersafe)
-        "*** YOUR CODE HERE ***"
+        Place.add_insect(self, insect)
+        if insect.watersafe == False:
+            insect.reduce_armor(insect.armor) # reduce armor to 0
 
 
 class FireAnt(Ant):
