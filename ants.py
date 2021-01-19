@@ -462,10 +462,18 @@ class FireAnt(Ant):
     name = 'Fire'
     damage = 3
     "*** YOUR CODE HERE ***"
-    implemented = False
+    implemented = True
+    food_cost = 4
+    armor = 1
 
     def reduce_armor(self, amount):
-        "*** YOUR CODE HERE ***"
+        self.armor -= amount
+        if self.armor <= 0:
+            burned_bees = self.place.bees.copy()
+            for bee in burned_bees:
+                bee.reduce_armor(self.damage)
+            print('{0} ran out of armor and expired'.format(self))
+            self.place.remove_insect(self)
 
 
 class LongThrower(ThrowerAnt):
