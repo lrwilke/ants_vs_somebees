@@ -182,6 +182,8 @@ class ThrowerAnt(Ant):
     implemented = True
     damage = 1
     food_cost = 4
+    min_range = 0
+    max_range = 10
 
     def nearest_bee(self, hive):
         """Return the nearest Bee in a Place that is not the Hive, connected to
@@ -192,6 +194,32 @@ class ThrowerAnt(Ant):
         Problem B5: This method returns None if there is no Bee in range.
         """
         "*** YOUR CODE HERE ***"
+        # range -> min_entrances_followed, max_entrances_followed
+        if self.min_range > 0: # LongThrower
+            def find_bee(place, to_follow=0):
+                if isinstance(place, Hive):
+                    return None
+                if place.bees and to_follow == 0:
+                    return random_or_none(place.bees)
+                else:
+                    new_to_follow = to_follow - 1 if to_follow > 0 else 0
+                    return find_bee(place.entrance, new_to_follow)
+
+            return find_bee(self.place, self.min_range)
+        
+        if self.max_range < 10: # ShortThrower
+            def find_bee(place, followed=0):
+                if isinstance(place, Hive):
+                    return None
+                if place.bees and followed <= followed:
+                    return random_or_none(place.bees)
+                else:
+                    new_followed = followed + 1
+                    return find_bee(place.entrance, new_followed)                                    
+
+            return find_bee(self.place, self.max_range)
+
+        # generic Thrower
         def find_bee(place):
             if isinstance(place, Hive):
                 return None
@@ -199,7 +227,6 @@ class ThrowerAnt(Ant):
                 return random_or_none(place.bees)
             else:
                 return find_bee(place.entrance)
-
         return find_bee(self.place)
 
     def throw_at(self, target):
@@ -489,16 +516,20 @@ class LongThrower(ThrowerAnt):
 
     name = 'Long'
     "*** YOUR CODE HERE ***"
-    implemented = False
-
+    food_cost = 3
+    armor = 1
+    implemented = True
+    min_range = 4
 
 class ShortThrower(ThrowerAnt):
     """A ThrowerAnt that only throws leaves at Bees within 3 places."""
 
     name = 'Short'
     "*** YOUR CODE HERE ***"
-    implemented = False
-
+    food_cost = 3
+    armor = 1
+    implemented = True
+    max_range = 2
 
 class WallAnt(Ant):
     """WallAnt is an Ant which has a large amount of armor."""
