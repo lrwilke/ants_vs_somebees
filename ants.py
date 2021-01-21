@@ -45,6 +45,15 @@ class Place:
         if insect.is_ant():
             # Phase 2: Special handling for BodyguardAnt
             "*** YOUR CODE HERE ***"
+            if isinstance(self.ant, BodyguardAnt):
+                self.ant.ant = insect
+                insect.place = self
+                return
+            if self.ant and isinstance(insect, BodyguardAnt):
+                insect.ant = self.ant
+                self.ant = insect
+                insect.place = self
+                return
             assert self.ant is None, 'Two ants in {0}'.format(self)
             self.ant = insect
         else:
@@ -58,6 +67,11 @@ class Place:
         else:
             assert self.ant == insect, '{0} is not in {1}'.format(insect, self)
             "*** YOUR CODE HERE ***"
+            if isinstance(self.ant, BodyguardAnt):
+                self.ant.place = None
+                self.ant = self.ant.ant
+                self.ant.place = self
+                return
             self.ant = None
 
         insect.place = None
@@ -147,6 +161,7 @@ class Ant(Insect):
     damage = 0
     food_cost = 0
     blocks_path = True
+    container = False
 
     def __init__(self, armor=1):
         """Create an Ant with an armor quantity."""
@@ -154,6 +169,9 @@ class Ant(Insect):
 
     def is_ant(self):
         return True
+
+    def can_contain(self, other):
+        return self.container is True and self.ant is None and other.container is False
 
 
 class HarvesterAnt(Ant):
@@ -610,7 +628,10 @@ class BodyguardAnt(Ant):
     """BodyguardAnt provides protection to other Ants."""
     name = 'Bodyguard'
     "*** YOUR CODE HERE ***"
-    implemented = False
+    implemented = True
+    food_cost = 4
+    armor = 2
+    container = True
 
     def __init__(self):
         Ant.__init__(self, 2)
@@ -618,9 +639,11 @@ class BodyguardAnt(Ant):
 
     def contain_ant(self, ant):
         "*** YOUR CODE HERE ***"
+        self.ant = ant
 
     def action(self, colony):
         "*** YOUR CODE HERE ***"
+        self.ant.action(colony)
 
 class QueenPlace:
     """A place that represents both places in which the bees find the queen.
